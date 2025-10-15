@@ -13,7 +13,7 @@ void Track::generateNodes()
         double theta = M_PI * k / (K - 1); // from 0 to π
         for(int h=0; h<H; ++h)
         {
-            double distance = I+(h/(H-1))*(O-I); // from outer to inner board
+            double distance = I+(static_cast<double>(h)/(H-1))*(O-I); // from inner to outer board
             double x = distance*cos(theta);
             double y = distance*sin(theta);
             nodes.push_back({x, y, k, h});
@@ -63,21 +63,21 @@ double Track::Dijkstra() {
         if (u == goal)
             return d; // shortest path found, return distance 
 
-        int ku = u / H; // row index
-        int hu = u % H; // column index
+        int ku = u / H; // current row index
+        int hu = u % H; // current column index
 
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < 8; ++i) // try all possible direction to move
         {
-            int kv = ku + dk[i]; //  row index of near node
-            int hv = hu + dh[i]; // column index of near node
-            if (kv < 0 || kv >= K || hv < 0 || hv >= H) //check the board
+            int kv = ku + dk[i]; //  row index of next node
+            int hv = hu + dh[i]; // column index of next node
+            if (kv < 0 || kv >= K || hv < 0 || hv >= H) //check if try to go outside the board
                 continue;
 
-            int v = index(kv, hv);
+            int v = index(kv, hv); //index of next node
 
-            double w=EuclideanDistance(ku,hu,kv,hv);
+            double w=EuclideanDistance(ku,hu,kv,hv); // distance between current a next node
 
-            // dijkstra relaxing, if the new distance is shorter, insert
+            // dijkstra relaxing, if the new distance is shorter, insert in the PriorityQueue
             if (dist[v] > dist[u] + w)
             {
                 dist[v] = dist[u] + w;
